@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .balance-container {
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            margin-bottom: 25px;
+        }
+        
+        .balance-title {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+        
+        .balance-amount {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        
+        .income-expense {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+        
+        .income-box, .expense-box {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .income-box {
+            background-color: rgba(46, 204, 113, 0.1);
+        }
+        
+        .expense-box {
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+        
+        .box-title {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .income-amount {
+            color: #2ecc71;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .expense-amount {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .form-container {
+            margin-bottom: 30px;
+        }
+        
+        .form-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4b6cb7;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #4b6cb7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #3a5aa4;
+        }
+        
+        .history-container {
+            margin-top: 20px;
+        }
+        
+        .history-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .clear-btn {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .transaction-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .transaction {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            position: relative;
+            border-left: 4px solid #ddd;
+        }
+        
+        .transaction.income {
+            border-left-color: #2ecc71;
+        }
+        
+        .transaction.expense {
+            border-left-color: #e74c3c;
+        }
+        
+        .transaction-text {
+            color: #333;
+        }
+        
+        .transaction-amount {
+            font-weight: 600;
+        }
+        
+        .transaction-amount.income {
+            color: #2ecc71;
+        }
+        
+        .transaction-amount.expense {
+            color: #e74c3c;
+        }
+        
+        .delete-btn {
+            opacity: 0;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 8px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .transaction:hover .delete-btn {
+            opacity: 1;
+        }
+        
+        .empty-message {
+            text-align: center;
+            color: #888;
+            padding: 15px;
+        }
+        
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .balance-amount {
+                font-size: 28px;
+            }
+            
+            .income-amount, .expense-amount {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Expense Tracker</h1>
+        
+        <div class="balance-container">
+            <div class="balance-title">YOUR BALANCE</div>
+            <div class="balance-amount" id="balance">₹0.00</div>
+        </div>
+        
+        <div class="income-expense">
+            <div class="income-box">
+                <div class="box-title">INCOME</div>
+                <div class="income-amount" id="income">₹0.00</div>
+            </div>
+            <div class="expense-box">
+                <div class="box-title">EXPENSE</div>
+                <div class="expense-amount" id="expense">₹0.00</div>
+            </div>
+        </div>
+        
+        <div class="form-container">
+            <div class="form-title">Add New Transaction</div>
+            <form id="form">
+                <div class="form-group">
+                    <label for="text">Description</label>
+                    <input type="text" id="text" placeholder="Enter description..." required>
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input type="number" id="amount" placeholder="Enter amount..." required min="0">
+                </div>
+                <div class="form-group">
+                    <label for="type">Type</label>
+                    <select id="type" required>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+                <button class="btn">Add Transaction</button>
+            </form>
+        </div>
+        
+        <div class="history-container">
+            <div class="history-title">
+                <span>Transaction History</span>
+                <button class="clear-btn" id="clear-all">Clear All</button>
+            </div>
+            <div class="transaction-list" id="transaction-list">
+                <div class="empty-message">No transactions yet.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const balanceEl = document.getElementById('balance');
+            const incomeEl = document.getElementById('income');
+            const expenseEl = document.getElementById('expense');
+            const formEl = document.getElementById('form');
+            const textEl = document.getElementById('text');
+            const amountEl = document.getElementById('amount');
+            const typeEl = document.getElementById('type');
+            const transactionListEl = document.getElementById('transaction-list');
+            const clearAllBtn = document.getElementById('clear-all');
+
+            // Get transactions from localStorage
+            let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+            // Format number as currency
+            function formatMoney(number) {
+                return '₹' + parseFloat(number).toFixed(2);
+            }
+
+            // Update the balance, income and expense
+            function updateValues() {
+                const income = transactions
+                    .filter(transaction => transaction.amount > 0)
+                    .reduce((acc, transaction) => acc + transaction.amount, 0);
+                
+                const expense = transactions
+                    .filter(transaction => transaction.amount < 0)
+                    .reduce((acc, transaction) => acc + Math.abs(transaction.amount), 0);
+                
+                const balance = income - expense;
+                
+                balanceEl.innerText = formatMoney(balance);
+                incomeEl.innerText = formatMoney(income);
+                expenseEl.innerText = formatMoney(expense);
+            }
+
+            // Add transaction to DOM list
+            function addTransactionDOM(transaction) {
+                const isIncome = transaction.amount > 0;
+                const transactionClass = isIncome ? 'income' : 'expense';
+                
+                const transactionEl = document.createElement('div');
+                transactionEl.classList.add('transaction', transactionClass);
+                transactionEl.setAttribute('data-id', transaction.id);
+                
+                transactionEl.innerHTML = `
+                    <span class="transaction-text">${transaction.text}</span>
+                    <span class="transaction-amount ${transactionClass}">
+                        ${isIncome ? '+' : '-'}${formatMoney(Math.abs(transaction.amount))}
+                    </span>
+                    <button class="delete-btn" onclick="removeTransaction(${transaction.id})">✕</button>
+                `;
+                
+                transactionListEl.appendChild(transactionEl);
+            }
+
+            // Initialize app
+            function init() {
+                transactionListEl.innerHTML = '';
+                
+                if (transactions.length === 0) {
+                    transactionListEl.innerHTML = '<div class="empty-message">No transactions yet.</div>';
+                } else {
+                    transactions.forEach(addTransactionDOM);
+                }
+                
+                updateValues();
+            }
+
+            // Add transaction
+            function addTransaction(e) {
+                e.preventDefault();
+                
+                if (!textEl.value.trim() || amountEl.value <= 0) {
+                    alert('Please add a description and amount');
+                    return;
+                }
+                
+                const text = textEl.value.trim();
+                let amount = +amountEl.value;
+                
+                // Convert to negative if expense
+                if (typeEl.value === 'expense') {
+                    amount = -amount;
+                }
+                
+                const transaction = {
+                    id: generateID(),
+                    text,
+                    amount
+                };
+                
+                transactions.push(transaction);
+                
+                updateLocalStorage();
+                init();
+                
+                textEl.value = '';
+                amountEl.value = '';
+            }
+
+            // Generate random ID
+            function generateID() {
+                return Math.floor(Math.random() * 1000000000);
+            }
+
+            // Remove transaction by ID
+            window.removeTransaction = function(id) {
+                transactions = transactions.filter(transaction => transaction.id !== id);
+                updateLocalStorage();
+                init();
+            }
+
+            // Update local storage
+            function updateLocalStorage() {
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+            }
+
+            // Clear all transactions
+            function clearAllTransactions() {
+                if (confirm('Are you sure you want to delete all transactions?')) {
+                    transactions = [];
+                    updateLocalStorage();
+                    init();
+                }
+            }
+
+            // Event listeners
+            formEl.addEventListener('submit', addTransaction);
+            clearAllBtn.addEventListener('click', clearAllTransactions);
+
+            // Initialize app
+            init();
+        });
+    </script>
+</body>
+</html>
